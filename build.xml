@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<!--
+The MIT License (MIT)
+
+Copyright (c) 2013 dajester2013
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+-->
+<project name="RailoCompilerService" xmlns:ivy="antlib:org.apache.ivy.ant" default="war">
+
+	<target name="load-ivy">
+		<path id="ivy.lib.path">
+			<pathelement location="lib/commons-codec-1.2.jar" />
+			<pathelement location="lib/commons-httpclient-3.0.jar" />
+			<pathelement location="lib/commons-logging-1.0.4.jar" />
+			<pathelement location="lib/commons-vfs-1.0.jar" />
+			<pathelement location="lib/jsch-0.1.31.jar" />
+			<pathelement location="lib/ivy-2.3.0.jar" />
+			<pathelement location="lib/oro-2.0.8.jar" />
+		</path>
+		
+		<taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant" classpathref="ivy.lib.path"  />
+	</target>
+	
+	<target name="init">
+		<mkdir dir="dist" />
+		<mkdir dir="dist/war" />
+		<mkdir dir="dist/war-standalone" />
+	</target>
+	<target name="war" depends="init">
+		<zip destfile="dist/war/rcs.war" basedir="src" includes="**" excludes="railo.pw" />
+	</target>
+	<target name="war-standalone" depends="init,load-ivy">
+		<ivy:retrieve conf="war-standalone" pattern="build/deps/[conf]/railo.war" />
+		<zip destfile="dist/war-standalone/rcs.war">
+			<fileset dir="src" includes="**" excludes="railo.pw" />
+			<zipfileset src="build/deps/war-standalone/railo.war" includes="**" excludes="**/*.cfc,**/*.cfm,res/**" />
+		</zip>
+	</target>
+	<target name="clean">
+		<delete dir="dist" includes="**" />
+	</target> 
+</project>
