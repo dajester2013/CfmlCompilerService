@@ -29,17 +29,17 @@
  **/
 component accessors=true output=false persistent=false {
 	
-	this.name = "RailoPackager";
+	this.name = "CfmlPackager";
 	this.sessionManagement = false;
 	this.clientManagement = false;
 	
 	public function onApplicationStart() {
-		if (FileExists("./railo.pw")) {
-			application.railopw = FileRead("./railo.pw");
+		if (FileExists("./webadmin.pw")) {
+			application.webadminpw = FileRead("./webadmin.pw");
 		} else {
-			application.railopw = CreateUUID();
-			FileWrite("./railo.pw",application.railopw);
-			admin action="updatePassword" newPassword=application.railopw type="web";
+			application.webadminpw = CreateUUID();
+			FileWrite("./webadmin.pw",application.webadminpw);
+			admin action="updatePassword" newPassword=application.webadminpw type="web";
 		}
 	}
 	

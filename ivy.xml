@@ -26,16 +26,18 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 	
 	<configurations>
 		<conf visibility="public" name="war-mini" />
-		<conf visibility="public" name="war-standalone" />
+		<conf visibility="public" name="war-standalone-railo" />
+		<conf visibility="public" name="war-standalone-lucee" />
 	</configurations>
 	
 	<publications>
-		<artifact name="rcs" conf="war-mini" type="war" />
-		<artifact name="rcs-sa" conf="war-standalone" type="war" />
+		<artifact name="ccs" conf="war-mini" type="war" />
+		<artifact name="ccs-sa" conf="war-standalone" type="war" />
 	</publications>
 	
 	<dependencies>
-		<dependency org="org.getrailo" name="railo.war" rev="4.1+" conf="war-standalone->default" />
+		<dependency org="org.getrailo" name="railo.war" rev="latest.integration" conf="war-standalone-railo->default" />
+		<dependency org="org.getrailo" name="lucee.war" rev="latest.integration" conf="war-standalone-lucee->default" />
 	</dependencies>
 	 
 </ivy-module>
