@@ -43,13 +43,20 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 		<mkdir dir="dist/war-standalone" />
 	</target>
 	<target name="war" depends="init">
-		<zip destfile="dist/war/rcs.war" basedir="src" includes="**" excludes="railo.pw" />
+		<zip destfile="dist/war/ccs.war" basedir="src" includes="**" excludes="railo.pw" />
 	</target>
-	<target name="war-standalone" depends="init,load-ivy">
+	<target name="war-standalone-railo" depends="init,load-ivy">
 		<ivy:retrieve conf="war-standalone" pattern="build/deps/[conf]/railo.war" />
-		<zip destfile="dist/war-standalone/rcs.war">
-			<fileset dir="src" includes="**" excludes="railo.pw" />
+		<zip destfile="dist/war-standalone/ccs.war">
+			<fileset dir="src" includes="**" excludes="webadmin.pw" />
 			<zipfileset src="build/deps/war-standalone/railo.war" includes="**" excludes="**/*.cfc,**/*.cfm,res/**" />
+		</zip>
+	</target>
+	<target name="war-standalone-lucee" depends="init,load-ivy">
+		<ivy:retrieve conf="war-standalone" pattern="build/deps/[conf]/lucee.war" />
+		<zip destfile="dist/war-standalone/ccs.war">
+			<fileset dir="src" includes="**" excludes="webadmin.pw" />
+			<zipfileset src="build/deps/war-standalone/lucee.war" includes="**" excludes="**/*.cfc,**/*.cfm,res/**" />
 		</zip>
 	</target>
 	<target name="clean">

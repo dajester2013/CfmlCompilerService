@@ -35,19 +35,23 @@ component accessors=true output=false {
 	property string		Excludes		;
 	property any		AuxMappings		;
 	property boolean	AsArchive		default=false;
-	property string		FileName		default="rcs-compiled-#gettickcount()#.ra";
+	property string		FileName		default="ccs-compiled-#gettickcount()#.ra";
 	property boolean	CompileInPlace	default=false;
 	property boolean	Verbose			default=true;
 	property boolean	CompileInPlace	default=false;
 	property boolean	IncludeCFML		default=false;
 	property boolean	IncludeStatic	default=false;
 	
+	CFClassesDir = structKeyExists(server,"lucee")	? "/WEB-INF/lucee/cfclasses"
+													: "/WEB-INF/railo/cfclasses"
+													;
+	
 	private function instructions() {
 		println("failed.");
 		println();		
 		println("Usage:");
 		println();
-		println("Example: http://localhost:8080/rcs/?SourceDir=/opt/cfml/apps/railo/MyProject&DestDir=/opt/cfml/apps/railo/MyProject/build/compiled");
+		println("Example: http://localhost:8080/ccs/?SourceDir=/opt/cfml/apps/MyProject&DestDir=/opt/cfml/apps/MyProject/build/compiled");
 		println();
 		println("Required URL parameters:");
 		println("------------------------");
@@ -85,8 +89,8 @@ component accessors=true output=false {
 	 * Checks preconditions.  Prints instructions when conditions are not met.
 	 **/
 	private function checkPreconditions() {
-		if (!structKeyExists(server,"railo") || val(server.railo.version) < 4.1) {
-			instructions(); //throw("Expected to run on Railo server version 4.1+");
+		if (!structKeyExists(server,"lucee") && (!structKeyExists(server,"railo") || val(server.railo.version) < 4.1)) {
+			instructions();
 		}
 		
 		if (isNull(this.getSourceDir()))
@@ -122,7 +126,7 @@ component accessors=true output=false {
 	package function compile() {
 		print("<pre>");/**/
 		println("--------------------------------------------------------------------------------");
-		println("- Railo Source Compiler V1.0                                                   -");
+		println("- CFML Source Compiler V1.1                                                    -");
 		println("--------------------------------------------------------------------------------");
 		
 		println();
@@ -138,7 +142,8 @@ component accessors=true output=false {
 			print(p.name);
 			for (var i=len(p.name); i<=19; i++) print(" ");
 			print(" = ");
-			print(serializeJson(isNull(variables[p.name]) ? "" : variables[p.name]));
+			print(!isNull(variables[p.name]) && isSimpleValue(variables[p.name])	? variables[p.name] 
+																					: (serializeJson(isNull(variables[p.name]) ? "" : variables[p.name])));
 			println();
 			
 			//println("#p.name# = #serializejson(isNull(variables[p.name]) ? '' : variables[p.name])#");
@@ -149,19 +154,19 @@ component accessors=true output=false {
 		
 		if (this.getAsArchive())
 			if (arraylen(this.getAuxMappings()))
-				lock name="RCS-COMPILE" timeout=10000 { _archive(); }
+				lock name="CCS-COMPILE" timeout=10000 { _archive(); }
 			else
 				_archive();
 		else
 			if (arraylen(this.getAuxMappings()))
-				lock name="RCS-COMPILE" timeout=10000 { _compile(); }
+				lock name="CCS-COMPILE" timeout=10000 { _compile(); }
 			else
 				_compile();
 	}
 	
 	private function _setup() {
 		variables.started	= gettickcount();
-		variables.compileId	= "RCOMP-" & CreateUUID();
+		variables.compileId	= "CCOMP-" & CreateUUID();
 		variables.mapping	= "/" & compileId;
 		
 		print("Creating temporary mapping...");
@@ -210,8 +215,8 @@ component accessors=true output=false {
 				DirectoryCreate(tmpdir);
 				compileMapping(virtual=mapping);
 				
-				for (var mappingdir in DirectoryList("/WEB-INF/railo/cfclasses/",false,"array")) {
-					if (mappingdir.startsWith(expandpath("/WEB-INF/railo/cfclasses/") & "CF" & expandpath(mapping).replaceAll("[^A-Za-z0-9]","_"))) {
+				for (var mappingdir in DirectoryList(CFClassesDir,false,"array")) {
+					if (mappingdir.startsWith(expandpath(CFClassesDir) & server.separator.file & "CF" & expandpath(mapping).replaceAll("[^A-Za-z0-9]","_"))) {
 						cdir = mappingdir;
 						break;
 					}
@@ -328,7 +333,7 @@ component accessors=true output=false {
 			arguments.returnvariable="retval";
 
 		arguments.type = "web";
-		arguments.password = application.railopw;
+		arguments.password = application.webadminpw;
 		structDelete(arguments,"expectReturn");
 
 		admin attributeCollection=arguments;

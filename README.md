@@ -1,14 +1,10 @@
-RailoCompilerService
-====================
+CfmlCompilerService
+===================
 
-Webservice for building sourceless deployments of Railo CFML projects.
+Webservice for building sourceless deployments of Railo and Lucee CFML projects.
 
 ### Build
 
- * WAR (for deployment into a servlet already configured to run Railo)
+ * WAR (for deployment into a servlet already configured to run a CFML application)
 Run: ant war
-Produces: dist/war/rcs.war
-
- * WAR - Standalone (for deployment into a general servlet container)
-Run: ant war-standalone
-Produces: dist/war-standalone/rcs.war
+Produces: dist/war/ccs.war
